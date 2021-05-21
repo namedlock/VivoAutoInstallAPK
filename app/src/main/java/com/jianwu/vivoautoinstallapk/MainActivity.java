@@ -30,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+        String pwd = (String) SharePreferencesUtils.getParam(getApplication(), AppConstants.KEY_PASSWORD, "");
+        password.setText(pwd);
+        password.setSelection(password.getText().length());
     }
 
     private void savePwd() {
