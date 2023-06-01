@@ -3,6 +3,7 @@ package com.jianwu.vivoautoinstallapk;
 import android.accessibilityservice.AccessibilityService;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -15,18 +16,29 @@ public class InstallerHelperService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        Log.i("__auto_install_apk__", "onAccessibilityEvent: "+event.getPackageName());
+
         AccessibilityNodeInfo rootNode = getRootInActiveWindow();
         if (rootNode == null) return;
 
-        if (event.getPackageName().equals("com.vivo.secime.service")) {
+        if (event.getPackageName().equals("com.vivo.secime.service")
+                || event.getPackageName().equals("com.android.packageinstaller")
+                || event.getPackageName().equals("com.bbk.account")
+        ) {
             //vivo账号密码
-            String password = (String) SharePreferencesUtils.getParam(getApplicationContext(),
-                    AppConstants.KEY_PASSWORD, "");
+            String password = (String) SharePreferencesUtils.getParam(getApplicationContext(), AppConstants.KEY_PASSWORD, "");
+            Log.i("__auto_install_apk__", "get stored password: "+password);
+
             if (!TextUtils.isEmpty(password)) {
                 fillPassword(rootNode, password);
             }
         }
         findAndClickView(rootNode);
+    }
+
+    @Override
+    protected void onServiceConnected() {
+        Log.i("__auto_install_apk__", "onServiceConnected: ");
     }
 
     /**
@@ -36,12 +48,15 @@ public class InstallerHelperService extends AccessibilityService {
         AccessibilityNodeInfo editText = rootNode.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
         if (editText == null) return;
 
-        if (editText.getPackageName().equals("com.bbk.account")
-                && editText.getClassName().equals("android.widget.EditText")) {
-            Bundle arguments = new Bundle();
-            arguments.putCharSequence(AccessibilityNodeInfo
-                    .ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, password);
-            editText.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+        Log.i("__auto_install_apk__", "fillPassword packageName: "+editText.getPackageName());
+
+        if(editText.getPackageName().equals("com.bbk.account") ){
+            if(editText.getClassName().equals("android.widget.EditText")){
+                Bundle arguments = new Bundle();
+                arguments.putCharSequence(AccessibilityNodeInfo
+                        .ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, password);
+                editText.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+            }
         }
     }
 
