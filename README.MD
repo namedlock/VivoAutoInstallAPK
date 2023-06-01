@@ -1,5 +1,5 @@
-### 基于Android Studio Flamingo | 2022.2.1 Patch 2
-1. update target sdk version to 33 and test againt vivo Y70s
+### build on Android Studio Flamingo | 2022.2.1 Patch 2
+1. update target sdk version to 33 and test against vivo Y70s
 2. settings - Build, Execution, Deployment - Build Tool - Gradle - Gradle JDK = embeded java 17
 
 ### 使用方法
